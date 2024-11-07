@@ -1,0 +1,13 @@
+name: Bridge-Runner
+main: me.pixeldots.BridgeRunner
+version: 1.0
+api-version: 1.18
+commands:
+    bridgeteams:
+        description: team commands (/bridgeteams help)
+        usage: /<command> <option> <teamcolor>
+        permission: bridgerunner.cmds.bridgeteams
+    bridgegame:
+        description: game commands (/bridgegame help)
+        usage: /<command> <option>
+        permission: bridgerunner.cmds.bridgegame

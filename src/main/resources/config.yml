@@ -1,0 +1,15 @@
+# Server Values
+requiredPlayersToStart: 0
+autoStartWithServer: false
+autoStartDelay: 5s
+
+# Int Values
+totalPoints: 5
+
+# Boolean Values
+canDestroyWorld: false
+friendlyFire: false
+endless: false
+
+# String Values
+gameTime: 15m

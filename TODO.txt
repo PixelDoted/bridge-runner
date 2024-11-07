@@ -1,0 +1,15 @@
+# - not finished
+# -/ not finished (less important)
+# + finished
+
++ respawning
++ game running
++ points
++ scoreboard
++ goal
++ give players items
++ clear player placed blocks
++ place world removed blocks
++ countdown
++ winning
++ API
