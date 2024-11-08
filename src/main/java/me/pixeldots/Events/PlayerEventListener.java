@@ -31,26 +31,6 @@ import me.pixeldots.Scoreboard.GameScoreboardUtils;
 import me.pixeldots.Utils.Utils;
 
 public class PlayerEventListener implements Listener {
-
-    @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent e) {
-        Player player = e.getPlayer();
-
-        int team = BridgeRunner.Variables.PlayerStats.get(player.getUniqueId()).team;
-        DirectionVector vector;
-
-        if (team == 0) vector = BridgeRunner.Variables.redSpawn;
-        else vector = BridgeRunner.Variables.blueSpawn;
-        
-        player.getInventory().clear();
-        BridgeGame.givePlayerDefaultItems(player, player.getInventory(), team);
-
-        Location location = new Location(player.getWorld(), vector.pos.getX(), vector.pos.getY(), vector.pos.getZ());
-        location.setYaw(vector.yaw);
-        location.setPitch(vector.pitch);
-        e.setRespawnLocation(location);
-    }
-
     @EventHandler
     public void onPlayerCraft(CraftItemEvent e) {
         e.setCancelled(true);
@@ -86,7 +66,8 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
-        Entity killer = e.getPlayer().getKiller();
+        Player player = e.getPlayer();
+        Entity killer = player.getKiller();
         if (killer != null) {
             if (killer instanceof Arrow) {
                 ProjectileSource shooter = ((Arrow)killer).getShooter();
@@ -96,6 +77,22 @@ public class PlayerEventListener implements Listener {
             BridgeRunner.Variables.PlayerStats.get(((Player)killer).getUniqueId()).kills++;
             GameScoreboardUtils.UpdateStatistics((Player)killer);
         }
+
+        // Reset Player
+        player.getInventory().clear();
+        player.setHealth(player.getMaxHealth());
+
+        PlayerStatistics stats = BridgeRunner.Variables.PlayerStats.get(player.getUniqueId());
+        DirectionVector spawn;
+        if (stats.team == 0) spawn = BridgeRunner.Variables.redSpawn;
+        else spawn = BridgeRunner.Variables.blueSpawn;
+
+        player.setFallDistance(0f);
+        player.teleport(new Location(BridgeRunner.world, spawn.pos.getX(), spawn.pos.getY(), spawn.pos.getZ(), spawn.yaw, spawn.pitch));
+        BridgeGame.givePlayerDefaultItems(player, player.getInventory(), stats.team);
+        
+        e.setCancelled(true);
+        
     }
 
     @EventHandler

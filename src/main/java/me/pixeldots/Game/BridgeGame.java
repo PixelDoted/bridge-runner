@@ -36,7 +36,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class BridgeGame {
 
-    public static Component scoredTitle = null;
+    public static Component scoredTitle = Utils.text("");
 
     public static void start() {
         BridgeRunner.Variables.PlayerStats.clear();
@@ -98,6 +98,7 @@ public class BridgeGame {
                 //PlayerUtils.setPlayerNameColor(player, (teamID == 0 ? "red" : "blue")); // update the player name
 
                 BridgeRunner.ReleaseTime = Utils.getDateTime()+(5*1000);
+                BridgeRunner.FallDamageDelay = Utils.getDateTime()+(7*1000);
                 teleportPlayerToCage(teamID, player);
                 player.setGameMode(GameMode.SURVIVAL); // set player's gamemode to survival
                 player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()); // set the player's health
@@ -137,15 +138,14 @@ public class BridgeGame {
             BridgeRunner.world.getBlockAt(pos.getBlockX(), pos.getBlockY(), pos.getBlockZ()).setType(Material.AIR);
         }
 
-        if (BridgeConf.canDestroyWorld) { // Replace destroyed world blocks
-            for (int i = 0; i < BridgeRunner.Variables.WorldBlocksDestroyed.size(); i++) {
-                WorldBlockData data = BridgeRunner.Variables.WorldBlocksDestroyed.get(i);
-                Block block = data.blockPos.getBlock();
-                block.setType(data.blockType);
-                data.blockPos.getWorld().setBlockData(data.blockPos, data.blockData);
-            }
-            BridgeRunner.Variables.WorldBlocksDestroyed.clear();
+        for (int i = 0; i < BridgeRunner.Variables.WorldBlocksDestroyed.size(); i++) {
+            WorldBlockData data = BridgeRunner.Variables.WorldBlocksDestroyed.get(i);
+            Block block = data.blockPos.getBlock();
+            block.setType(data.blockType);
+            data.blockPos.getWorld().setBlockData(data.blockPos, data.blockData);
         }
+        BridgeRunner.Variables.WorldBlocksDestroyed.clear();
+        
 
         List<Entity> entities = BridgeRunner.world.getEntities();
         for (int i = 0; i < entities.size(); i++) { // Clear Entitys
@@ -174,17 +174,18 @@ public class BridgeGame {
             if (winTeam != -1) {
                 PlayerStatistics stats = BridgeRunner.Variables.PlayerStats.get(uuid);
                 if (stats.team == winTeam) {
-                    Utils.sendTitle(player, Utils.text("VICTORY!", TextColor.color(255, 255, 0)), null);
+                    Utils.sendTitle(player, Utils.text("VICTORY!", TextColor.color(255, 255, 0)), Utils.text(""));
                     playersWon.add(uuid);
                 }
                 else {
-                    Utils.sendTitle(player, Utils.text("GAME OVER", TextColor.color(255, 0, 0)), null);
+                    Utils.sendTitle(player, Utils.text("GAME OVER", TextColor.color(255, 0, 0)), Utils.text(""));
                     playersLost.add(uuid);
                 }
             } else {
-                Utils.sendTitle(player, Utils.text("DRAW"), null);
+                Utils.sendTitle(player, Utils.text("DRAW"), Utils.text(""));
             }
         }
+
         APIEventCaller.gameEnd(winTeam, playersWon, playersLost);
         BridgeRunner.endGame();
     }
@@ -232,6 +233,9 @@ public class BridgeGame {
             CageBuilder.destroy(BridgeRunner.world, BridgeRunner.Variables.redCageCenter.pos, Material.GLASS, Material.GRAY_TERRACOTTA);
             BridgeRunner.ReleaseTime = -1;
         }
+        if (BridgeRunner.FallDamageDelay != -1 && currentTime >= BridgeRunner.FallDamageDelay) {
+            BridgeRunner.FallDamageDelay = -1;
+        }
     }
 
     public static void playerScored(Player scorer, int TeamID) {
@@ -240,11 +244,11 @@ public class BridgeGame {
         if (TeamID == 1) {
             scoredTitle = Utils.text(scorer.getName() + " has scored!", TextColor.color(0, 0, 255));
             BridgeRunner.Variables.bluePoints++;
-            if (BridgeRunner.Variables.bluePoints == BridgeConf.totalPoints) endGame = true;
+            if (BridgeRunner.Variables.bluePoints >= BridgeConf.totalPoints) endGame = true;
         } else {
             scoredTitle = Utils.text(scorer.getName() + " has scored!", TextColor.color(255, 0, 0));
             BridgeRunner.Variables.redPoints++;
-            if (BridgeRunner.Variables.redPoints == BridgeConf.totalPoints) endGame = true;
+            if (BridgeRunner.Variables.redPoints >= BridgeConf.totalPoints) endGame = true;
         }
         int scorerGoals = BridgeRunner.Variables.PlayerStats.get(scorer.getUniqueId()).goals++;
         AsyncBridgeGameTicker.actions.add(() -> {
@@ -271,18 +275,13 @@ public class BridgeGame {
                 sendScoredMessage(player, scorer, scorerGoals+1, TeamID);
                 teleportPlayerToCage(team, player);
                 APIEventCaller.playerScore(TeamID, scorer);
-
-                if (endGame && team != TeamID) {
-                    Utils.sendTitle(player, Utils.text("GAME OVER", TextColor.color(255, 0, 0)), null);
-                } else if (endGame) {
-                    Utils.sendTitle(player, Utils.text("VICTORY!", TextColor.color(255, 255, 0)), null);
-                }
-
             }
         }
+
         if (endGame) RandomEndGame();
         else {
             BridgeRunner.ReleaseTime = Utils.getDateTime()+(5*1000);
+            BridgeRunner.FallDamageDelay = Utils.getDateTime()+(7*1000);
         }
     }
 
@@ -290,6 +289,7 @@ public class BridgeGame {
         DirectionVector cagePos;
         if (team == 0) cagePos = BridgeRunner.Variables.redCageCenter;
         else  cagePos = BridgeRunner.Variables.blueCageCenter;
+        player.setFallDistance(0f);
         player.teleport(new Location(player.getWorld(), cagePos.pos.getX(), cagePos.pos.getY(), cagePos.pos.getZ(), cagePos.yaw, cagePos.pitch));
     }
 
