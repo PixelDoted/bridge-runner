@@ -43,13 +43,13 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void onPlayerConsume(PlayerItemConsumeEvent e) {
-        if (e.getItem().getType() == Material.GOLDEN_APPLE)
+        if (BridgeRunner.isRunning && e.getItem().getType() == Material.GOLDEN_APPLE)
             e.getPlayer().setHealth(e.getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
     }
 
     @EventHandler
     public void onProjectileLaunch(ProjectileLaunchEvent e) {
-        if (e.getEntity().getShooter() instanceof Player) {
+        if (BridgeRunner.isRunning && e.getEntity().getShooter() instanceof Player) {
             Player player = (Player)e.getEntity().getShooter();
             if (BridgeRunner.Variables.PlayerStats.containsKey(player.getUniqueId())) {
                 PlayerStatistics stats = BridgeRunner.Variables.PlayerStats.get(player.getUniqueId());
@@ -66,6 +66,8 @@ public class PlayerEventListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent e) {
+        if (!BridgeRunner.isRunning) return;
+        
         Player player = e.getPlayer();
         Entity killer = player.getKiller();
         if (killer != null) {
