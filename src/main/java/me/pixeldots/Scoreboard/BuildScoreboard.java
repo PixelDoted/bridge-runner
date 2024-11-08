@@ -81,6 +81,8 @@ public class BuildScoreboard {
     }
     
     public static void replaceScore(Objective objective, int score, String name) {
+        if (objective == null) return;
+        
         if (hasScoreTaken(objective, score)) {
             if(getEntryFromScore(objective, score).equalsIgnoreCase(name)) return;
             if(!(getEntryFromScore(objective, score).equalsIgnoreCase(name))) { 

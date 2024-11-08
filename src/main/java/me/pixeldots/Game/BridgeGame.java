@@ -29,6 +29,7 @@ import me.pixeldots.Game.data.DirectionVector;
 import me.pixeldots.Game.data.PlayerStatistics;
 import me.pixeldots.Game.data.WorldBlockData;
 import me.pixeldots.Scoreboard.GameScoreboardUtils;
+import me.pixeldots.Scoreboard.LobbyScoreboardUtils;
 import me.pixeldots.Utils.Utils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -52,7 +53,7 @@ public class BridgeGame {
         }
         Utils.Logger().info("[DEBUG] Setting up the Lobby Scoreboard");
         
-        //ScoreboardUtils.RegisterLobbyBoard();
+        LobbyScoreboardUtils.Register();
         BridgeRunner.StartingTime = Utils.getDateTime()+(30*1000);
         BridgeRunner.isStarting = true;
     }
