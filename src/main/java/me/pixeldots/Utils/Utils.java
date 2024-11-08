@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.bukkit.potion.PotionEffect;
 
 import me.pixeldots.BridgeRunner;
 import me.pixeldots.Game.data.PlayerStatistics;
@@ -166,6 +167,12 @@ public class Utils {
         if (canSendTitle) {
             player.showTitle(Title.title(title, subtitle));
             if (stats != null) stats.lastTitle = Utils.text(title) + ":" + Utils.text(subtitle) + ":" + date;
+        }
+    }
+
+    public static void clearEffects(Player player) {
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            player.removePotionEffect(effect.getType());
         }
     }
 

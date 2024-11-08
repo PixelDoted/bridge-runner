@@ -80,6 +80,7 @@ public class PlayerEventListener implements Listener {
 
         // Reset Player
         player.getInventory().clear();
+        Utils.clearEffects(player);
         player.setHealth(player.getMaxHealth());
 
         PlayerStatistics stats = BridgeRunner.Variables.PlayerStats.get(player.getUniqueId());

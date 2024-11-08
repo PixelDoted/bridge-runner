@@ -271,6 +271,7 @@ public class BridgeGame {
                 sendScoredMessage(player, scorer, scorerGoals+1, TeamID);
 
                 player.getInventory().clear();
+                Utils.clearEffects(player);
                 givePlayerDefaultItems(player, player.getInventory(), team);
                 player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 teleportPlayerToCage(team, player);
