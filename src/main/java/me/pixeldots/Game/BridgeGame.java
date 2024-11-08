@@ -267,13 +267,14 @@ public class BridgeGame {
                 AsyncBridgeGameTicker.actions.add(() -> {
                     GameScoreboardUtils.UpdateTeamsboard(player);
                 });
-                
+
+                sendScoredMessage(player, scorer, scorerGoals+1, TeamID);
+
                 player.getInventory().clear();
                 givePlayerDefaultItems(player, player.getInventory(), team);
                 player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-
-                sendScoredMessage(player, scorer, scorerGoals+1, TeamID);
                 teleportPlayerToCage(team, player);
+
                 APIEventCaller.playerScore(TeamID, scorer);
             }
         }
