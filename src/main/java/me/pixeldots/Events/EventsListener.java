@@ -11,6 +11,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.util.Vector;
 
 import me.pixeldots.BridgeConf;
@@ -53,6 +54,7 @@ public class EventsListener implements Listener {
     public void onBlockPlaced(BlockPlaceEvent e) {
         if (BridgeRunner.isStarting) e.setCancelled(true);
         if (!BridgeRunner.isRunning) return;
+        if (BridgeRunner.ReleaseTime != -1) e.setCancelled(true);
         
         if (BlockUtils.isBlockOutOfBounds(e.getBlock().getLocation())) {
             e.getPlayer().sendMessage(Utils.text("You have reached the build limit!", TextColor.color(255, 22, 22))); 
@@ -91,4 +93,13 @@ public class EventsListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent e) {
+        if (!BridgeRunner.isRunning || !(e.getEntity() instanceof Player)) return;
+        Player player = (Player)e.getEntity();
+
+        if (e.getCause() == EntityDamageEvent.DamageCause.FALL && BridgeRunner.FallDamageDelay != -1) {
+            e.setCancelled(true);
+        }
+    }
 }

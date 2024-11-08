@@ -23,7 +23,7 @@ public class BridgeRunner extends JavaPlugin
     public static AsyncBridgeGameTicker asyncTickHandler;
     public static VariableHandler Variables;
 
-	public static boolean isRunning = false;
+	  public static boolean isRunning = false;
     public static boolean isStarting = false;
     public static boolean isTesting = false;
 
@@ -31,8 +31,9 @@ public class BridgeRunner extends JavaPlugin
     public static long GameStartedTime = 0;
     public static long GameEndTime = 0;
     public static long ReleaseTime = -1;
+    public static long FallDamageDelay = -1;
 
-	public static String savePath = "/BridgeRunner.json";
+	  public static String savePath = "/BridgeRunner.json";
 
     public static Logger logger;
     public static JavaPlugin instance;
